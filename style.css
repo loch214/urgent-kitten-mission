@@ -1,0 +1,52 @@
+/* Basic reset to make it full screen */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Hides scrollbars */
+}
+
+.divine-container {
+    height: 100%;
+    width: 100%;
+    background-image: url('images/creation_of_adam.jpg');
+
+    /* --- FIX --- */
+    background-size: contain; /* This makes sure the whole image fits */
+    background-color: #000; /* Adds a black background for any empty space */
+    /* ----------- */
+
+    background-position: center center;
+    background-repeat: no-repeat;
+    
+    position: relative;
+}
+#kitten-link {
+    /* This is the magic! We position it exactly where we want. */
+    position: absolute;
+    top: 46%; /* Adjust this value to move the kitten up/down */
+    left: 49.5%; /* Adjust this value to move the kitten left/right */
+    
+    /* This helps center the kitten on the coordinates */
+    transform: translate(-50%, -50%);
+    
+    /* Make the kitten a bit bigger */
+    width: 100px; /* Adjust size as needed */
+    height: auto;
+    
+    /* Add a subtle glow to make it clickable */
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7));
+    transition: all 0.2s ease-in-out;
+}
+
+#kitten-link:hover {
+    transform: translate(-50%, -50%) scale(1.15); /* Enlarge on hover */
+    filter: drop-shadow(0 0 25px rgba(255, 255, 180, 1)); /* Brighter glow on hover */
+    cursor: pointer;
+}
+
+#kitten-link img {
+    width: 100%;
+    height: 100%;
+}
