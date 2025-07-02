@@ -5,16 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Divine Intervention Required</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="images/kitten.png"> <!-- Optional: Adds a kitten icon to the browser tab -->
+    <link rel="icon" href="images/kitten.png">
 </head>
 <body>
 
     <div class="divine-container">
-        <!-- The link that wraps the kitten. This is the Rickroll! -->
-        <a id="kitten-link" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">
+        
+        <img id="painting" src="images/creation_of_adam.jpg" alt="The Creation of Adam">
+
+        <a id="kitten-link" href="https://www.youtube.com/watch?v=8ScAnaU0FFE" target="_blank">
             <img src="images/kitten.png" alt="A sleeping kitten in desperate need of a divine touch. Click to save it.">
         </a>
+
     </div>
+
+    <div id="custom-cursor"></div>
+
+    <script>
+        const cursor = document.getElementById('custom-cursor');
+        const kittenLink = document.getElementById('kitten-link');
+
+        // Makes the custom magnifying glass follow the mouse
+        window.addEventListener('mousemove', e => {
+            cursor.style.top = e.pageY + 'px';
+            cursor.style.left = e.pageX + 'px';
+        });
+
+        // Hides the magnifying glass when hovering over the kitten
+        kittenLink.addEventListener('mouseenter', () => {
+            cursor.style.display = 'none';
+        });
+
+        // Shows the magnifying glass again when the mouse leaves
+        kittenLink.addEventListener('mouseleave', () => {
+            cursor.style.display = 'block';
+        });
+    </script>
 
 </body>
 </html>
