@@ -13,8 +13,19 @@
         
         <img id="painting" src="images/creation_of_adam.jpg" alt="The Creation of Adam">
 
+        <!-- The ONE TRUE KITTEN -->
         <a id="kitten-link" href="https://www.youtube.com/watch?v=8ScAnaU0FFE" target="_blank">
             <img src="images/kitten.png" alt="A sleeping kitten in desperate need of a divine touch. Click to save it.">
+        </a>
+
+        <!-- IMPOSTER DOG 1 -->
+        <a id="dog1-link" href="https://www.youtube.com/watch?v=fC7oUOUEEi4" target="_blank">
+            <img src="images/dog1.png" alt="An imposter dog. Do not touch.">
+        </a>
+
+        <!-- IMPOSTER DOG 2 -->
+        <a id="dog2-link" href="https://www.youtube.com/watch?v=G8iEM_M0K-A" target="_blank">
+            <img src="images/dog2.png" alt="Another imposter dog. Do not touch.">
         </a>
 
     </div>
@@ -23,22 +34,24 @@
 
     <script>
         const cursor = document.getElementById('custom-cursor');
-        const kittenLink = document.getElementById('kitten-link');
+        // Select ALL clickable links (kitten and dogs)
+        const clickableLinks = document.querySelectorAll('#kitten-link, #dog1-link, #dog2-link');
 
         // Makes the custom magnifying glass follow the mouse
         window.addEventListener('mousemove', e => {
-            cursor.style.top = e.pageY + 'px';
             cursor.style.left = e.pageX + 'px';
+            cursor.style.top = e.pageY + 'px';
         });
 
-        // Hides the magnifying glass when hovering over the kitten
-        kittenLink.addEventListener('mouseenter', () => {
-            cursor.style.display = 'none';
-        });
+        // Add the hide/show effect to EVERY clickable link
+        clickableLinks.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursor.style.display = 'none';
+            });
 
-        // Shows the magnifying glass again when the mouse leaves
-        kittenLink.addEventListener('mouseleave', () => {
-            cursor.style.display = 'block';
+            link.addEventListener('mouseleave', () => {
+                cursor.style.display = 'block';
+            });
         });
     </script>
 
