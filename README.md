@@ -10,4 +10,4 @@ Be wary, for celestial imposters have appeared! Two false prophets in the form o
 ### **[Proceed to the mission...](https://loch214.github.io/urgent-kitten-mission/)**
 
 ---
-*This repository is for entertainment purposes only. No kittens or dogs were harmed in the making of this project.*
+*This repository is for entertainment purposes only. No kittens or dogs were harmed in the making of this project 😪✌️*
