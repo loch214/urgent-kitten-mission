@@ -82,6 +82,10 @@ body {
 #kitten-link.awakening img {
   animation: kitten-wake 2s ease-out forwards;
 }
+/* Brief shake + red flash when the rampaging dino crashes into the kitten */
+#kitten-link.hurt img {
+  animation: kitten-hurt 0.4s ease-in-out;
+}
 
 /*
 ====================================
@@ -125,8 +129,8 @@ body {
 /* --- Imposter Loaf (a suspiciously cat-shaped loaf of bread) --- */
 #loaf-link {
   position: absolute;
-  top: 13%;
-  left: 61%;
+  top: 30%;
+  left: 8%;
   width: 90px;
   height: auto;
   text-align: center;
@@ -136,12 +140,19 @@ body {
 #loaf-link:hover {
   cursor: pointer;
 }
+/* Sinks like it's dropped into a toaster, then pops back up toasted */
+#loaf-link.toasting {
+  animation-play-state: paused;
+}
+#loaf-link.toasting .emoji-imposter {
+  animation: loaf-toast 1.4s ease-in-out forwards;
+}
 
 /* --- Imposter Dino (a tiny divine dinosaur) --- */
 #dino-link {
   position: absolute;
-  top: 81%;
-  left: 30%;
+  top: 60%;
+  left: 85%;
   width: 90px;
   height: auto;
   text-align: center;
@@ -150,6 +161,10 @@ body {
 }
 #dino-link:hover {
   cursor: pointer;
+}
+/* Hidden once it launches into its rampage (a fixed-position clone takes over) */
+#dino-link.launched {
+  opacity: 0 !important;
 }
 
 .emoji-imposter {
@@ -210,6 +225,62 @@ body {
   height: 100%;
   border: 0;
   background: #000;
+}
+
+/* --- Dino Rampage (fixed-position clone that flies across the whole screen) --- */
+.dino-rampage {
+  position: fixed;
+  font-size: 70px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10001;
+  animation: dino-rampage 1.9s ease-in-out forwards;
+}
+
+/* --- Impact Burst (reused for the dino/kitten crash) --- */
+.impact-burst {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fff 0%,
+    #ffe9a8 35%,
+    rgba(255, 120, 50, 0) 70%
+  );
+  animation: impact-flash 0.5s ease-out forwards;
+  pointer-events: none;
+  z-index: 10001;
+}
+.impact-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10001;
+  animation: impact-particle-fly 0.6s ease-out forwards;
+}
+
+/* --- Toaster Steam Puffs --- */
+.steam-puff {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10001;
+  animation: steam-rise 0.9s ease-out forwards;
+}
+
+/* --- Whole-page shake on impact --- */
+body.screen-shake {
+  animation: screen-shake 0.4s ease-in-out;
 }
 
 /*
@@ -307,5 +378,137 @@ body {
   100% {
     transform: translate(-50%, -50%) scale(16);
     opacity: 0;
+  }
+}
+
+/* The kitten's brief hurt reaction: shake + red flash */
+@keyframes kitten-hurt {
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 6px rgba(255, 255, 220, 0.6));
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    filter: brightness(1.3) sepia(1) hue-rotate(-50deg) saturate(3);
+    transform: scale(0.9) rotate(-6deg);
+  }
+  50% {
+    filter: brightness(0.8) sepia(1) hue-rotate(-50deg) saturate(3);
+    transform: scale(1.05) rotate(5deg);
+  }
+  75% {
+    filter: brightness(1.2);
+    transform: scale(0.95) rotate(-3deg);
+  }
+}
+
+/* The dino's rampage path: bounces around the screen, growing, then lands on the kitten */
+@keyframes dino-rampage {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1) rotate(0deg);
+  }
+  12% {
+    transform: translate(-50%, -50%) translate(35vw, -25vh) scale(1.2) rotate(20deg);
+  }
+  26% {
+    transform: translate(-50%, -50%) translate(-30vw, 20vh) scale(1.5) rotate(-25deg);
+  }
+  40% {
+    transform: translate(-50%, -50%) translate(25vw, 30vh) scale(1.9) rotate(15deg);
+  }
+  55% {
+    transform: translate(-50%, -50%) translate(-35vw, -20vh) scale(2.3) rotate(-15deg);
+  }
+  70% {
+    transform: translate(-50%, -50%) translate(15vw, 10vh) scale(2.8) rotate(10deg);
+  }
+  85% {
+    transform: translate(-50%, -50%) translate(var(--fx), var(--fy)) scale(3.6) rotate(-5deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--fx), var(--fy)) scale(4.4) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+/* The flash of the dino/kitten impact burst */
+@keyframes impact-flash {
+  0% {
+    width: 10px;
+    height: 10px;
+    opacity: 1;
+  }
+  100% {
+    width: 280px;
+    height: 280px;
+    opacity: 0;
+  }
+}
+
+/* Particles flying outward from the impact */
+@keyframes impact-particle-fly {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* The loaf sinking into and popping out of an invisible toaster */
+@keyframes loaf-toast {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: sepia(0) brightness(1);
+  }
+  20% {
+    transform: translateY(18px) scale(0.88) rotate(-4deg);
+    filter: sepia(0.2) brightness(0.9);
+  }
+  45% {
+    transform: translateY(-55px) scale(1.15) rotate(10deg);
+    filter: sepia(0.6) brightness(1.1);
+  }
+  60% {
+    transform: translateY(-65px) scale(1.2) rotate(-6deg);
+    filter: sepia(0.8) brightness(1.15);
+  }
+  100% {
+    transform: translateY(-58px) scale(1.15) rotate(0deg);
+    filter: sepia(0.75) brightness(1.1);
+  }
+}
+
+/* A steam puff drifting up and fading */
+@keyframes steam-rise {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateY(-70px) scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* A jolt across the whole page on impact */
+@keyframes screen-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-10px, 6px);
+  }
+  40% {
+    transform: translate(8px, -8px);
+  }
+  60% {
+    transform: translate(-6px, 8px);
+  }
+  80% {
+    transform: translate(10px, -4px);
   }
 }
