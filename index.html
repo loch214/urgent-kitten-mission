@@ -6,10 +6,6 @@
     <title>Divine Intervention Required</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="images/kitten.png" />
-    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
-    <link rel="preconnect" href="https://i.ytimg.com" />
-    <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
-    <link rel="dns-prefetch" href="https://i.ytimg.com" />
   </head>
   <body>
     <div class="divine-container">
@@ -20,12 +16,7 @@
       />
 
       <!-- The ONE TRUE KITTEN -->
-      <a
-        id="kitten-link"
-        href="https://www.youtube.com/watch?v=8ScAnaU0FFE"
-        data-video-id="8ScAnaU0FFE"
-        target="_blank"
-      >
+      <a id="kitten-link" href="videos/kitten.mp4" data-video-src="videos/kitten.mp4">
         <img
           src="images/kitten.png"
           alt="A sleeping kitten in desperate need of a divine touch. Click to save it."
@@ -33,22 +24,12 @@
       </a>
 
       <!-- IMPOSTER DOG 1 -->
-      <a
-        id="dog1-link"
-        href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-        data-video-id="dQw4w9WgXcQ"
-        target="_blank"
-      >
+      <a id="dog1-link" href="videos/dog1.mp4" data-video-src="videos/dog1.mp4">
         <img src="images/dog1.png" alt="An imposter dog. Do not touch." />
       </a>
 
       <!-- IMPOSTER DOG 2 -->
-      <a
-        id="dog2-link"
-        href="https://www.youtube.com/watch?v=ma4IaFi-TS8"
-        data-video-id="ma4IaFi-TS8"
-        target="_blank"
-      >
+      <a id="dog2-link" href="videos/dog2.mp4" data-video-src="videos/dog2.mp4">
         <img src="images/dog2.png" alt="Another imposter dog. Do not touch." />
       </a>
     </div>
@@ -65,17 +46,15 @@
     <script>
       const videoModal = document.getElementById("video-modal");
       const videoModalPlayer = document.getElementById("video-modal-player");
-      const videoLinks = document.querySelectorAll("a[data-video-id]");
+      const videoLinks = document.querySelectorAll("a[data-video-src]");
 
-      const openVideoModal = (videoId) => {
-        const iframe = document.createElement("iframe");
-        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
-        iframe.title = "YouTube video player";
-        iframe.frameBorder = "0";
-        iframe.allow =
-          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-        iframe.allowFullscreen = true;
-        videoModalPlayer.appendChild(iframe);
+      const openVideoModal = (videoSrc) => {
+        const video = document.createElement("video");
+        video.src = videoSrc;
+        video.autoplay = true;
+        video.controls = true;
+        video.playsInline = true;
+        videoModalPlayer.appendChild(video);
         videoModal.classList.add("open");
       };
 
@@ -87,7 +66,7 @@
       videoLinks.forEach((link) => {
         link.addEventListener("click", (e) => {
           e.preventDefault();
-          openVideoModal(link.dataset.videoId);
+          openVideoModal(link.dataset.videoSrc);
         });
       });
 
