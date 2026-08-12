@@ -27,16 +27,14 @@ body {
 }
 
 /* --- Reveal Targets (hidden until background painting has loaded) --- */
-#kitten-link,
-#dog1-link,
-#dog2-link {
+.critter-link {
   opacity: 0;
   transition: opacity 0.6s ease-in;
   pointer-events: none;
+  text-decoration: none;
+  color: inherit;
 }
-.painting-loaded #kitten-link,
-.painting-loaded #dog1-link,
-.painting-loaded #dog2-link {
+.painting-loaded .critter-link {
   opacity: 1;
   pointer-events: auto;
 }
@@ -58,6 +56,10 @@ body {
   width: 60%;
   height: 80%;
 }
+/* Poof-out when the kitten is clicked, right before the video opens */
+#kitten-link.exploded img {
+  animation: kitten-poof 0.5s ease-out forwards;
+}
 
 /*
 ====================================
@@ -68,12 +70,10 @@ body {
 /* --- Imposter Dog 1 --- */
 #dog1-link {
   position: absolute;
-  /* STARTING POSITION - you will change this */
   top: 69%;
   left: 17%;
-  width: 120px; /* You can change this size */
+  width: 120px;
   height: auto;
-  /* Apply the new shake animation */
   animation: shake 0.5s infinite;
   cursor: none;
 }
@@ -87,10 +87,9 @@ body {
 /* --- Imposter Dog 2 --- */
 #dog2-link {
   position: absolute;
-  /* STARTING POSITION - you will change this */
   top: 24.3%;
   left: 74%;
-  width: 100px; /* You can change this size */
+  width: 100px;
   height: auto;
   cursor: none;
 }
@@ -99,6 +98,45 @@ body {
 }
 #dog2-link img {
   width: 100%;
+}
+
+/* --- Imposter Loaf (a suspiciously cat-shaped loaf of bread) --- */
+#loaf-link {
+  position: absolute;
+  top: 13%;
+  left: 61%;
+  width: 90px;
+  height: auto;
+  text-align: center;
+  animation: shake 0.6s infinite;
+  cursor: none;
+}
+#loaf-link:hover {
+  cursor: pointer;
+}
+
+/* --- Imposter Dino (a tiny divine dinosaur) --- */
+#dino-link {
+  position: absolute;
+  top: 81%;
+  left: 30%;
+  width: 90px;
+  height: auto;
+  text-align: center;
+  animation: wobble 1.4s infinite ease-in-out;
+  cursor: none;
+}
+#dino-link:hover {
+  cursor: pointer;
+}
+
+.emoji-imposter {
+  display: block;
+  font-size: 70px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+  user-select: none;
+  text-decoration: none;
 }
 
 /* --- Custom Magnifying Glass Cursor --- */
@@ -152,6 +190,34 @@ body {
   background: #000;
 }
 
+/* --- Kitten Explosion Effect (fixed-position, spawned at click point via JS) --- */
+.kitten-burst {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #fff 0%,
+    #ffe9a8 35%,
+    rgba(255, 180, 50, 0) 70%
+  );
+  animation: kitten-burst-flash 0.5s ease-out forwards;
+  pointer-events: none;
+  z-index: 10001;
+}
+.kitten-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10001;
+  animation: kitten-particle-fly 0.6s ease-out forwards;
+}
+
 /*
 ========================
 === NEW ANIMATIONS =====
@@ -171,7 +237,7 @@ body {
   }
 }
 
-/* The new, funny, chaotic shake for the dogs */
+/* The new, funny, chaotic shake for the dogs (and the loaf) */
 @keyframes shake {
   0% {
     transform: translate(1px, 1px) rotate(0deg);
@@ -206,145 +272,60 @@ body {
   100% {
     transform: translate(1px, -2px) rotate(-1deg);
   }
-} /* --- Basic Page Setup --- */
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  background-color: #000;
-  cursor: none;
 }
 
-/* --- Painting Container --- */
-.divine-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 1920px;
-}
-
-/* --- The Painting Image --- */
-#painting {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* --- Clickable Kitten Link --- */
-#kitten-link {
-  position: absolute;
-  top: 50.5%;
-  left: 44.4%; /* Your final kitten position */
-  width: 90px;
-  height: auto;
-  animation: pulse 2.5s infinite ease-in-out;
-  cursor: none;
-}
-#kitten-link:hover {
-  cursor: pointer;
-}
-#kitten-link img {
-  width: 60%;
-  height: 80%;
-}
-
-/* --- Imposter Dog 1 (The Shaky One) --- */
-#dog1-link {
-  position: absolute;
-  top: 69%;
-  left: 17%; /* Your final dog 1 position */
-  width: 120px;
-  height: auto;
-  animation: shake 0.5s infinite;
-  cursor: none;
-}
-#dog1-link:hover {
-  cursor: pointer;
-}
-#dog1-link img {
-  width: 100%;
-}
-
-/* --- Imposter Dog 2 (The Static One) --- */
-#dog2-link {
-  position: absolute;
-  top: 24.3%;
-  left: 74%; /* Your final dog 2 position */
-  width: 100px;
-  height: auto;
-  cursor: none;
-}
-#dog2-link:hover {
-  cursor: pointer;
-}
-#dog2-link img {
-  width: 100%;
-}
-
-/* --- Custom Magnifying Glass Cursor --- */
-#custom-cursor {
-  position: fixed;
-  width: 50px;
-  height: 50px;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>');
-  background-size: contain;
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-}
-
-/* --- Animations --- */
-/* The calm, breathing glow for the kitten */
-@keyframes pulse {
+/* A goofy side-to-side wobble for the dino */
+@keyframes wobble {
   0%,
   100% {
-    transform: translate(-50%, -50%) scale(1);
-    filter: drop-shadow(0 0 10px rgba(255, 255, 220, 0.7));
+    transform: rotate(-8deg) scale(1);
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.1);
-    filter: drop-shadow(0 0 25px rgba(255, 255, 220, 1));
+    transform: rotate(8deg) scale(1.08);
   }
 }
 
-/* The chaotic shake for the first dog */
-@keyframes shake {
+/* The kitten's dramatic poof right before the video opens */
+@keyframes kitten-poof {
   0% {
-    transform: translate(1px, 1px) rotate(0deg);
-  }
-  10% {
-    transform: translate(-1px, -2px) rotate(-1deg);
-  }
-  20% {
-    transform: translate(-3px, 0px) rotate(1deg);
-  }
-  30% {
-    transform: translate(3px, 2px) rotate(0deg);
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1);
   }
   40% {
-    transform: translate(1px, -1px) rotate(1deg);
-  }
-  50% {
-    transform: translate(-1px, 2px) rotate(-1deg);
-  }
-  60% {
-    transform: translate(-3px, 1px) rotate(0deg);
-  }
-  70% {
-    transform: translate(3px, 1px) rotate(-1deg);
-  }
-  80% {
-    transform: translate(-1px, -1px) rotate(1deg);
-  }
-  90% {
-    transform: translate(1px, 2px) rotate(0deg);
+    transform: scale(1.3);
+    opacity: 1;
+    filter: brightness(2);
   }
   100% {
-    transform: translate(1px, -2px) rotate(-1deg);
+    transform: scale(0.2);
+    opacity: 0;
+    filter: brightness(3);
+  }
+}
+
+/* The flash of the divine spark burst */
+@keyframes kitten-burst-flash {
+  0% {
+    width: 10px;
+    height: 10px;
+    opacity: 1;
+  }
+  100% {
+    width: 260px;
+    height: 260px;
+    opacity: 0;
+  }
+}
+
+/* Particles flying outward from the burst */
+@keyframes kitten-particle-fly {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.2);
+    opacity: 0;
   }
 }
