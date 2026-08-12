@@ -34,12 +34,12 @@
       </a>
 
       <!-- IMPOSTER LOAF (a suspiciously cat-shaped loaf of bread) -->
-      <a id="loaf-link" class="critter-link" href="videos/dog1.mp4" data-video-src="videos/dog1.mp4">
+      <a id="loaf-link" class="critter-link" href="#">
         <span class="emoji-imposter" role="img" aria-label="A suspiciously cat-shaped loaf of bread. Not the mission.">🍞</span>
       </a>
 
       <!-- IMPOSTER DINO (a tiny divine dinosaur, also not it) -->
-      <a id="dino-link" class="critter-link" href="videos/dog2.mp4" data-video-src="videos/dog2.mp4">
+      <a id="dino-link" class="critter-link" href="#">
         <span class="emoji-imposter" role="img" aria-label="A tiny divine dinosaur. Also not the mission.">🦖</span>
       </a>
     </div>
@@ -128,39 +128,62 @@
         osc.stop(now + 0.6);
       };
 
-      // A cheerful two-tone "ding!" for the toaster gag.
-      const playDingSound = () => {
+      // A quick, sharp "chomp" for the dino's bite.
+      const playChompSound = () => {
+        const ctx = getAudioCtx();
+        const duration = 0.22;
+        const buffer = ctx.createBuffer(1, ctx.sampleRate * duration, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < data.length; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 3);
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(1800, ctx.currentTime);
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.5, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        noise.connect(filter).connect(gain).connect(ctx.destination);
+        noise.start();
+        noise.stop(ctx.currentTime + duration);
+      };
+
+      // An ascending magical chime for the loaf's multiplication miracle.
+      const playMiracleSound = () => {
         const ctx = getAudioCtx();
         const now = ctx.currentTime;
-        [1568, 1976].forEach((freq, i) => {
-          const start = now + i * 0.08;
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+          const start = now + i * 0.09;
           const osc = ctx.createOscillator();
-          osc.type = "sine";
+          osc.type = "triangle";
           osc.frequency.setValueAtTime(freq, start);
           const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.25, start);
-          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+          gain.gain.setValueAtTime(0.22, start);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4);
           osc.connect(gain).connect(ctx.destination);
           osc.start(start);
-          osc.stop(start + 0.5);
+          osc.stop(start + 0.4);
         });
       };
 
       // Generic radiating particle burst at a fixed viewport point, used for impacts.
-      const spawnBurst = (x, y, colors) => {
+      const spawnBurst = (x, y, colors, size) => {
         const flash = document.createElement("div");
         flash.className = "impact-burst";
         flash.style.left = x + "px";
         flash.style.top = y + "px";
+        if (size) flash.style.setProperty("--burst-size", size + "px");
         document.body.appendChild(flash);
         flash.addEventListener("animationend", () => flash.remove());
 
-        const particleCount = 16;
+        const particleCount = size ? 8 : 16;
         for (let i = 0; i < particleCount; i++) {
           const particle = document.createElement("div");
           particle.className = "impact-particle";
           const angle = (Math.PI * 2 * i) / particleCount + Math.random() * 0.4;
-          const distance = 70 + Math.random() * 100;
+          const distance = (size ? 35 : 70) + Math.random() * (size ? 50 : 100);
           particle.style.setProperty("--dx", Math.cos(angle) * distance + "px");
           particle.style.setProperty("--dy", Math.sin(angle) * distance + "px");
           particle.style.left = x + "px";
@@ -171,22 +194,19 @@
         }
       };
 
-      // Small rising steam puffs for the toaster gag.
-      const spawnSteam = (x, y) => {
-        for (let i = 0; i < 6; i++) {
-          const puff = document.createElement("div");
-          puff.className = "steam-puff";
-          puff.style.left = x + (Math.random() * 40 - 20) + "px";
-          puff.style.top = y + "px";
-          puff.style.animationDelay = Math.random() * 0.15 + "s";
-          document.body.appendChild(puff);
-          puff.addEventListener("animationend", () => puff.remove());
-        }
-      };
+      // Dino breaks loose and rampages across the whole screen, exploding at
+      // several points along the way, then crashes into the kitten and bites
+      // a chunk out of it. No video — this is its own self-contained gag.
+      const RAMPAGE_DURATION_MS = 1900;
+      const rampageWaypoints = [
+        { t: 228, dx: 0.35, dy: -0.25 },
+        { t: 494, dx: -0.3, dy: 0.2 },
+        { t: 760, dx: 0.25, dy: 0.3 },
+        { t: 1045, dx: -0.35, dy: -0.2 },
+        { t: 1330, dx: 0.15, dy: 0.1 },
+      ];
 
-      // Dino breaks loose, rampages across the screen growing huge, then
-      // crashes into the kitten in a burst — the kitten visibly reacts.
-      const triggerDinoRampage = (dinoLink, kittenLink) => {
+      const triggerDinoRampage = (dinoLink, kittenLink, onDone) => {
         dinoLink.classList.add("launched");
         const startRect = dinoLink.getBoundingClientRect();
         const startX = startRect.left + startRect.width / 2;
@@ -204,42 +224,64 @@
         rampage.style.setProperty("--fy", targetY - startY + "px");
         document.body.appendChild(rampage);
 
-        rampage.addEventListener(
-          "animationend",
-          () => {
-            rampage.remove();
-            spawnBurst(targetX, targetY, ["#7CFC00", "#ff4500", "#ffd700", "#ffffff"]);
-            playExplosionSound();
-            document.body.classList.add("screen-shake");
-            setTimeout(() => document.body.classList.remove("screen-shake"), 400);
-            kittenLink.classList.add("hurt");
-            kittenLink.addEventListener(
-              "animationend",
-              () => kittenLink.classList.remove("hurt"),
-              { once: true }
+        // Mini blasts along the flight path — "exploding everywhere".
+        const explodeColors = ["#7CFC00", "#ff4500", "#ffd700", "#ffffff"];
+        rampageWaypoints.forEach(({ t, dx, dy }) => {
+          setTimeout(() => {
+            spawnBurst(
+              startX + dx * window.innerWidth,
+              startY + dy * window.innerHeight,
+              explodeColors,
+              90
             );
-          },
-          { once: true }
-        );
+            playExplosionSound();
+          }, t);
+        });
+
+        setTimeout(() => {
+          rampage.remove();
+          // The big finale: crash, explode, and take a bite out of the kitten.
+          spawnBurst(targetX, targetY, explodeColors);
+          playExplosionSound();
+          document.body.classList.add("screen-shake");
+          setTimeout(() => document.body.classList.remove("screen-shake"), 400);
+          kittenLink.classList.add("hurt");
+
+          setTimeout(() => {
+            playChompSound();
+            kittenLink.classList.add("bitten");
+            if (onDone) onDone();
+          }, 250);
+        }, RAMPAGE_DURATION_MS);
       };
 
-      // Loaf sinks down like it's dropped into a toaster, then pops back up toasted.
-      const triggerLoafToast = (loafLink) => {
-        loafLink.classList.add("toasting");
-        playDingSound();
+      // Loaf multiplies into a shower of loaves raining across the whole
+      // screen (a little "loaves and fishes" miracle), then is gone for good.
+      const triggerLoafMiracle = (loafLink, onDone) => {
+        loafLink.classList.add("multiplying");
+        playMiracleSound();
         const rect = loafLink.getBoundingClientRect();
-        setTimeout(
-          () => spawnSteam(rect.left + rect.width / 2, rect.top + rect.height / 2 - 40),
-          600
-        );
-      };
+        const originX = rect.left + rect.width / 2;
+        const originY = rect.top + rect.height / 2;
 
-      const imposterEffects = {
-        "dog1-link": () => playExplosionSound(),
-        "dog2-link": () => playHonkSound(),
-        "loaf-link": (link) => triggerLoafToast(link),
-        "dino-link": (link) =>
-          triggerDinoRampage(link, document.getElementById("kitten-link")),
+        const cloneCount = 18;
+        for (let i = 0; i < cloneCount; i++) {
+          const clone = document.createElement("div");
+          clone.className = "loaf-clone";
+          clone.textContent = "🍞";
+          clone.style.left = originX + "px";
+          clone.style.top = originY + "px";
+          clone.style.setProperty("--tx", (Math.random() * 140 - 70) + "vw");
+          clone.style.setProperty("--ty", (Math.random() * 90 - 15) + "vh");
+          clone.style.setProperty("--rot", Math.random() * 720 - 360 + "deg");
+          clone.style.animationDelay = Math.random() * 0.3 + "s";
+          document.body.appendChild(clone);
+          clone.addEventListener("animationend", () => clone.remove());
+        }
+
+        setTimeout(() => {
+          if (onDone) onDone();
+        }, 1900);
       };
 
       let transitioning = false;
@@ -253,14 +295,35 @@
 
           if (link.id === "kitten-link") {
             link.classList.add("awakening");
-          } else if (imposterEffects[link.id]) {
-            imposterEffects[link.id](link);
+          } else if (link.id === "dog1-link") {
+            playExplosionSound();
+          } else if (link.id === "dog2-link") {
+            playHonkSound();
           }
 
           setTimeout(() => {
             revealVideoModal(video);
             transitioning = false;
           }, EFFECT_DELAY_MS);
+        });
+      });
+
+      // Loaf and dino are video-free gags — no preload/reveal step needed.
+      document.getElementById("dino-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        if (transitioning) return;
+        transitioning = true;
+        triggerDinoRampage(e.currentTarget, document.getElementById("kitten-link"), () => {
+          transitioning = false;
+        });
+      });
+
+      document.getElementById("loaf-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        if (transitioning) return;
+        transitioning = true;
+        triggerLoafMiracle(e.currentTarget, () => {
+          transitioning = false;
         });
       });
 

@@ -86,6 +86,11 @@ body {
 #kitten-link.hurt img {
   animation: kitten-hurt 0.4s ease-in-out;
 }
+/* A permanent bite-shaped chunk taken out of the kitten by the dino */
+#kitten-link.bitten img {
+  -webkit-mask-image: radial-gradient(circle 7px at 78% 32%, transparent 99%, black 100%);
+  mask-image: radial-gradient(circle 7px at 78% 32%, transparent 99%, black 100%);
+}
 
 /*
 ====================================
@@ -140,12 +145,9 @@ body {
 #loaf-link:hover {
   cursor: pointer;
 }
-/* Sinks like it's dropped into a toaster, then pops back up toasted */
-#loaf-link.toasting {
-  animation-play-state: paused;
-}
-#loaf-link.toasting .emoji-imposter {
-  animation: loaf-toast 1.4s ease-in-out forwards;
+/* Flashes and vanishes as it multiplies into a shower of loaves */
+#loaf-link.multiplying {
+  animation: loaf-vanish 0.3s ease-out forwards;
 }
 
 /* --- Imposter Dino (a tiny divine dinosaur) --- */
@@ -238,8 +240,9 @@ body {
   animation: dino-rampage 1.9s ease-in-out forwards;
 }
 
-/* --- Impact Burst (reused for the dino/kitten crash) --- */
+/* --- Impact Burst (reused for the dino's mid-flight and final explosions) --- */
 .impact-burst {
+  --burst-size: 280px;
   position: fixed;
   width: 10px;
   height: 10px;
@@ -266,16 +269,15 @@ body {
   animation: impact-particle-fly 0.6s ease-out forwards;
 }
 
-/* --- Toaster Steam Puffs --- */
-.steam-puff {
+/* --- Loaf Clones (rain across the whole screen during the multiply miracle) --- */
+.loaf-clone {
   position: fixed;
-  width: 14px;
-  height: 14px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
-  border-radius: 50%;
+  font-size: 46px;
+  line-height: 1;
+  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 10001;
-  animation: steam-rise 0.9s ease-out forwards;
+  animation: loaf-scatter 1.6s ease-in forwards;
 }
 
 /* --- Whole-page shake on impact --- */
@@ -431,7 +433,7 @@ body.screen-shake {
   }
 }
 
-/* The flash of the dino/kitten impact burst */
+/* The flash of an impact burst (size configurable via --burst-size) */
 @keyframes impact-flash {
   0% {
     width: 10px;
@@ -439,8 +441,8 @@ body.screen-shake {
     opacity: 1;
   }
   100% {
-    width: 280px;
-    height: 280px;
+    width: var(--burst-size);
+    height: var(--burst-size);
     opacity: 0;
   }
 }
@@ -457,38 +459,33 @@ body.screen-shake {
   }
 }
 
-/* The loaf sinking into and popping out of an invisible toaster */
-@keyframes loaf-toast {
+/* The loaf flashing bright then vanishing as the miracle begins */
+@keyframes loaf-vanish {
   0% {
-    transform: translateY(0) scale(1) rotate(0deg);
-    filter: sepia(0) brightness(1);
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1);
   }
-  20% {
-    transform: translateY(18px) scale(0.88) rotate(-4deg);
-    filter: sepia(0.2) brightness(0.9);
-  }
-  45% {
-    transform: translateY(-55px) scale(1.15) rotate(10deg);
-    filter: sepia(0.6) brightness(1.1);
-  }
-  60% {
-    transform: translateY(-65px) scale(1.2) rotate(-6deg);
-    filter: sepia(0.8) brightness(1.15);
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+    filter: brightness(2.2);
   }
   100% {
-    transform: translateY(-58px) scale(1.15) rotate(0deg);
-    filter: sepia(0.75) brightness(1.1);
+    transform: scale(0.3);
+    opacity: 0;
+    filter: brightness(3);
   }
 }
 
-/* A steam puff drifting up and fading */
-@keyframes steam-rise {
+/* A multiplied loaf scattering outward and tumbling away */
+@keyframes loaf-scatter {
   0% {
-    transform: translate(-50%, -50%) scale(0.6);
-    opacity: 0.9;
+    transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) translateY(-70px) scale(1.6);
+    transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.7);
     opacity: 0;
   }
 }
