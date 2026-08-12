@@ -6,6 +6,10 @@
     <title>Divine Intervention Required</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="images/kitten.png" />
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+    <link rel="preconnect" href="https://i.ytimg.com" />
+    <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
+    <link rel="dns-prefetch" href="https://i.ytimg.com" />
   </head>
   <body>
     <div class="divine-container">
@@ -19,6 +23,7 @@
       <a
         id="kitten-link"
         href="https://www.youtube.com/watch?v=8ScAnaU0FFE"
+        data-video-id="8ScAnaU0FFE"
         target="_blank"
       >
         <img
@@ -31,6 +36,7 @@
       <a
         id="dog1-link"
         href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        data-video-id="dQw4w9WgXcQ"
         target="_blank"
       >
         <img src="images/dog1.png" alt="An imposter dog. Do not touch." />
@@ -40,6 +46,7 @@
       <a
         id="dog2-link"
         href="https://www.youtube.com/watch?v=ma4IaFi-TS8"
+        data-video-id="ma4IaFi-TS8"
         target="_blank"
       >
         <img src="images/dog2.png" alt="Another imposter dog. Do not touch." />
@@ -48,7 +55,60 @@
 
     <div id="custom-cursor"></div>
 
+    <div id="video-modal">
+      <div id="video-modal-backdrop"></div>
+      <div id="video-modal-frame">
+        <div id="video-modal-player"></div>
+      </div>
+    </div>
+
     <script>
+      const videoModal = document.getElementById("video-modal");
+      const videoModalPlayer = document.getElementById("video-modal-player");
+      const videoLinks = document.querySelectorAll("a[data-video-id]");
+
+      const openVideoModal = (videoId) => {
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+        iframe.title = "YouTube video player";
+        iframe.frameBorder = "0";
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        videoModalPlayer.appendChild(iframe);
+        videoModal.classList.add("open");
+      };
+
+      const closeVideoModal = () => {
+        videoModal.classList.remove("open");
+        videoModalPlayer.innerHTML = "";
+      };
+
+      videoLinks.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          openVideoModal(link.dataset.videoId);
+        });
+      });
+
+      document
+        .getElementById("video-modal-backdrop")
+        .addEventListener("click", closeVideoModal);
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeVideoModal();
+      });
+    </script>
+
+    <script>
+      const painting = document.getElementById("painting");
+      const container = document.querySelector(".divine-container");
+      const revealCritters = () => container.classList.add("painting-loaded");
+      if (painting.complete) {
+        revealCritters();
+      } else {
+        painting.addEventListener("load", revealCritters);
+      }
+
       const cursor = document.getElementById("custom-cursor");
       // Select ALL clickable links (kitten and dogs)
       const clickableLinks = document.querySelectorAll(
