@@ -56,9 +56,31 @@ body {
   width: 60%;
   height: 80%;
 }
-/* Poof-out when the kitten is clicked, right before the video opens */
-#kitten-link.exploded img {
-  animation: kitten-poof 0.5s ease-out forwards;
+/* Heaven's-doors glow behind the kitten as it wakes up */
+#kitten-link.awakening {
+  animation-play-state: paused;
+}
+#kitten-link.awakening::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 240, 180, 0.7) 35%,
+    rgba(255, 200, 80, 0) 75%
+  );
+  transform: translate(-50%, -50%) scale(1);
+  animation: heaven-glow 2s ease-out forwards;
+  pointer-events: none;
+}
+/* Wakes up, grows, and glows instead of the old poof-out */
+#kitten-link.awakening img {
+  animation: kitten-wake 2s ease-out forwards;
 }
 
 /*
@@ -190,34 +212,6 @@ body {
   background: #000;
 }
 
-/* --- Kitten Explosion Effect (fixed-position, spawned at click point via JS) --- */
-.kitten-burst {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    #fff 0%,
-    #ffe9a8 35%,
-    rgba(255, 180, 50, 0) 70%
-  );
-  animation: kitten-burst-flash 0.5s ease-out forwards;
-  pointer-events: none;
-  z-index: 10001;
-}
-.kitten-particle {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 10001;
-  animation: kitten-particle-fly 0.6s ease-out forwards;
-}
-
 /*
 ========================
 === NEW ANIMATIONS =====
@@ -285,47 +279,33 @@ body {
   }
 }
 
-/* The kitten's dramatic poof right before the video opens */
-@keyframes kitten-poof {
+/* The kitten waking up: grows and glows brighter, heaven's-doors style */
+@keyframes kitten-wake {
   0% {
     transform: scale(1);
-    opacity: 1;
-    filter: brightness(1);
+    filter: brightness(1) drop-shadow(0 0 6px rgba(255, 255, 220, 0.6));
   }
-  40% {
-    transform: scale(1.3);
-    opacity: 1;
-    filter: brightness(2);
+  60% {
+    transform: scale(1.9);
+    filter: brightness(1.8) drop-shadow(0 0 45px rgba(255, 255, 200, 1));
   }
   100% {
-    transform: scale(0.2);
-    opacity: 0;
-    filter: brightness(3);
+    transform: scale(1.6);
+    filter: brightness(1.5) drop-shadow(0 0 30px rgba(255, 255, 200, 0.9));
   }
 }
 
-/* The flash of the divine spark burst */
-@keyframes kitten-burst-flash {
+/* The radiant burst of light behind the waking kitten */
+@keyframes heaven-glow {
   0% {
-    width: 10px;
-    height: 10px;
-    opacity: 1;
-  }
-  100% {
-    width: 260px;
-    height: 260px;
+    transform: translate(-50%, -50%) scale(0.5);
     opacity: 0;
   }
-}
-
-/* Particles flying outward from the burst */
-@keyframes kitten-particle-fly {
-  0% {
-    transform: translate(-50%, -50%) translate(0, 0) scale(1);
+  25% {
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.2);
+    transform: translate(-50%, -50%) scale(16);
     opacity: 0;
   }
 }
